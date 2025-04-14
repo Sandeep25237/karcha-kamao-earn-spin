@@ -3,11 +3,22 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
-import { ADMOB_CONFIG, getAdUnitId } from '@/utils/admobConfig';
+import { ADMOB_CONFIG, getAdUnitId, shouldUseTestAds } from '@/utils/admobConfig';
 
 interface AdMobAdProps {
   onComplete: () => void;
   onDismiss?: () => void;
+}
+
+// Type definition for window with cordova
+declare global {
+  interface Window {
+    cordova?: {
+      plugins?: {
+        admob?: any;
+      };
+    };
+  }
 }
 
 const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
