@@ -22,11 +22,27 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
     console.log(`Initializing AdMob with App ID: ${ADMOB_CONFIG.APP_ID}`);
     console.log(`Loading ad unit: ${adUnitId}`);
     
+    // Add some debugging
+    if (window.hasOwnProperty('cordova') && window.cordova?.plugins?.admob) {
+      console.log("Cordova AdMob plugin is available");
+      try {
+        // Sample code to initialize AdMob - you will need the actual Cordova implementation
+        // window.cordova.plugins.admob.initialize(ADMOB_CONFIG.APP_ID);
+        console.log("AdMob initialized successfully");
+      } catch (error) {
+        console.error("Error initializing AdMob:", error);
+        setAdError("Failed to initialize AdMob plugin");
+      }
+    } else {
+      console.log("Cordova AdMob plugin is NOT available");
+      console.log("Are you running on a real device with Cordova?");
+    }
+    
     const timer = setTimeout(() => {
       setIsLoading(false);
-      // In a real implementation, we would initialize the AdMob SDK here
       
       // For now, we'll simulate successful ad display
+      // This should be replaced with actual AdMob implementation
       const simulateAdDisplay = setTimeout(() => {
         console.log("Ad display completed");
         onComplete();
@@ -71,7 +87,7 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
           ) : adError ? (
             <div className="flex flex-col items-center">
               <div className="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center mb-4">
-                <p className="text-red-500">Ad failed to load</p>
+                <p className="text-red-500">{adError}</p>
               </div>
               <Button onClick={handleDismiss} className="w-full">
                 Close
@@ -83,11 +99,11 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
                 <p className="text-sm mb-2">AdMob Advertisement</p>
                 <p className="text-xs text-center opacity-75">ID: {adUnitId}</p>
                 <p className="mt-4 text-xs text-center">
-                  {process.env.NODE_ENV === 'development' ? "(Test Ad)" : "(Production Ad)"}
+                  {shouldUseTestAds() ? "(Test Ad)" : "(Production Ad)"}
                 </p>
               </div>
               <p className="text-center mb-4 text-sm text-gray-500">
-                In production, your real AdMob ad would appear here
+                Real AdMob ad would appear here on device
               </p>
             </div>
           )}
