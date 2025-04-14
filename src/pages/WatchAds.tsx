@@ -5,7 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import VideoAd from '@/components/VideoAd';
+import AdMobAd from '@/components/AdMobAd';
 import { toast } from '@/components/ui/sonner';
 import { Video } from 'lucide-react';
 
@@ -78,7 +78,7 @@ const WatchAds = () => {
       </div>
       
       {showAd && (
-        <VideoAd 
+        <AdMobAd 
           onComplete={handleAdComplete}
           onDismiss={() => setShowAd(false)}
         />

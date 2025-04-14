@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Card } from '@/components/ui/card';
 import Layout from '@/components/Layout';
-import VideoAd from '@/components/VideoAd';
+import AdMobAd from '@/components/AdMobAd';
 import { CheckCircle, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
@@ -87,7 +87,7 @@ const DailyLogin = () => {
       </div>
       
       {showAd && (
-        <VideoAd 
+        <AdMobAd 
           onComplete={handleAdComplete} 
           onDismiss={() => setShowAd(false)}
         />
