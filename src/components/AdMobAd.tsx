@@ -1,8 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
+
+// AdMob Configuration
+const ADMOB_APP_ID = 'ca-app-pub-9884257131349852~8583116889';
+const ADMOB_UNIT_ID = 'ca-app-pub-9884257131349852/9475727853';
 
 interface AdMobAdProps {
   onComplete: () => void;
@@ -13,14 +17,18 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [adError, setAdError] = useState<string | null>(null);
   
-  // Simulate ad loading
-  useState(() => {
+  // Initialize AdMob
+  useEffect(() => {
+    console.log(`Initializing AdMob with App ID: ${ADMOB_APP_ID}`);
+    console.log(`Loading ad unit: ${ADMOB_UNIT_ID}`);
+    
     const timer = setTimeout(() => {
       setIsLoading(false);
       // In a real implementation, we would initialize the AdMob SDK here
       
       // For now, we'll simulate successful ad display
       const simulateAdDisplay = setTimeout(() => {
+        console.log("Ad display completed");
         onComplete();
       }, 2000);
       
@@ -28,9 +36,10 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
     }, 1000);
     
     return () => clearTimeout(timer);
-  });
+  }, [onComplete]);
   
   const handleDismiss = () => {
+    console.log("Ad dismissed by user");
     if (onDismiss) onDismiss();
   };
   
@@ -70,13 +79,13 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
             </div>
           ) : (
             <div className="flex flex-col items-center">
-              <div className="w-full h-40 bg-gray-800 rounded-lg mb-4 flex items-center justify-center text-white">
-                AdMob Advertisement
-                <br />
-                (Placeholder)
+              <div className="w-full h-40 bg-gray-800 rounded-lg mb-4 flex flex-col items-center justify-center text-white p-4">
+                <p className="text-sm mb-2">AdMob Advertisement</p>
+                <p className="text-xs text-center opacity-75">ID: {ADMOB_UNIT_ID}</p>
+                <p className="mt-4 text-xs text-center">(Simulated for development)</p>
               </div>
               <p className="text-center mb-4 text-sm text-gray-500">
-                In production, a real ad would appear here
+                In production, your real AdMob ad would appear here
               </p>
             </div>
           )}
