@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { useAppContext } from '@/context/AppContext';
@@ -10,15 +11,23 @@ import { Loader2 } from 'lucide-react';
 const spinOptions = [0, 5, 15, 25, 24, 30, 45, 50, 47, 49];
 
 const Home = () => {
-  const { coins, addCoins, spinUsedToday, setSpinUsedToday } = useAppContext();
+  const { 
+    coins, 
+    addCoins, 
+    spinsUsedToday,
+    remainingSpins,
+    maxDailySpins,
+    incrementSpinsUsed 
+  } = useAppContext();
+  
   const [showAd, setShowAd] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinResult, setSpinResult] = useState<number | null>(null);
   const wheelRef = useRef<HTMLDivElement>(null);
   
   const handleSpin = () => {
-    if (spinUsedToday) {
-      toast("You've already used your spin today! Come back tomorrow.");
+    if (remainingSpins <= 0) {
+      toast("You've used all your spins for today! Come back tomorrow.");
       return;
     }
     
@@ -57,7 +66,7 @@ const Home = () => {
       
       // Add coins to balance
       addCoins(result);
-      setSpinUsedToday(true);
+      incrementSpinsUsed();
       
       toast.success(`Congratulations! You won ${result} coins!`);
     }, 3000);
@@ -71,7 +80,9 @@ const Home = () => {
         <Card className="p-4 flex flex-col items-center">
           <div className="text-center mb-4">
             <p className="text-lg font-semibold">Spin the wheel to win coins!</p>
-            <p className="text-sm text-gray-500">One free spin available daily</p>
+            <p className="text-sm text-gray-500">
+              Remaining spins today: <span className="font-medium">{remainingSpins}</span> of {maxDailySpins}
+            </p>
           </div>
           
           {/* Wheel */}
@@ -112,14 +123,14 @@ const Home = () => {
           <Button
             className="w-full max-w-xs"
             onClick={handleSpin}
-            disabled={spinUsedToday || isSpinning}
+            disabled={remainingSpins <= 0 || isSpinning}
           >
             {isSpinning ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Spinning...
               </>
-            ) : spinUsedToday ? (
+            ) : remainingSpins <= 0 ? (
               "Come Back Tomorrow"
             ) : (
               "Spin & Win"

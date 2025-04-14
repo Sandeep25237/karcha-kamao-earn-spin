@@ -22,8 +22,10 @@ interface AppContextType {
   canWatchMoreAds: boolean;
   withdrawalHistory: WithdrawalRecord[];
   addWithdrawalRecord: (record: Omit<WithdrawalRecord, 'id' | 'date' | 'status'>) => void;
-  spinUsedToday: boolean;
-  setSpinUsedToday: (used: boolean) => void;
+  spinsUsedToday: number;
+  incrementSpinsUsed: () => void;
+  remainingSpins: number;
+  maxDailySpins: number;
 }
 
 const daysOfWeek: DayOfWeek[] = [
@@ -66,17 +68,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [spinUsedToday, setSpinUsedToday] = useState<boolean>(() => {
-    const saved = localStorage.getItem('spinUsedToday');
-    const savedDate = localStorage.getItem('spinUsedDate');
+  const [spinsUsedToday, setSpinsUsedToday] = useState<number>(() => {
+    const saved = localStorage.getItem('spinsUsedToday');
+    const savedDate = localStorage.getItem('spinsUsedDate');
     const today = new Date().toDateString();
     
     if (saved && savedDate === today) {
-      return JSON.parse(saved);
+      return parseInt(saved, 10);
     }
-    return false;
+    return 0;
   });
   
+  const maxDailySpins = 10; // Maximum number of spins per day
+  const remainingSpins = maxDailySpins - spinsUsedToday;
   const currentDay = getCurrentDay();
   const canWatchMoreAds = watchedAdsToday < 5;
   
@@ -99,9 +103,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [withdrawalHistory]);
 
   useEffect(() => {
-    localStorage.setItem('spinUsedToday', JSON.stringify(spinUsedToday));
-    localStorage.setItem('spinUsedDate', new Date().toDateString());
-  }, [spinUsedToday]);
+    localStorage.setItem('spinsUsedToday', spinsUsedToday.toString());
+    localStorage.setItem('spinsUsedDate', new Date().toDateString());
+  }, [spinsUsedToday]);
   
   // Reset daily counters at midnight
   useEffect(() => {
@@ -111,7 +115,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       
       if (lastDate !== today) {
         setWatchedAdsToday(0);
-        setSpinUsedToday(false);
+        setSpinsUsedToday(0);
         localStorage.setItem('lastDate', today);
       }
     };
@@ -142,6 +146,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
   
+  const incrementSpinsUsed = () => {
+    if (remainingSpins > 0) {
+      setSpinsUsedToday(prev => prev + 1);
+    }
+  };
+  
   const addWithdrawalRecord = (record: Omit<WithdrawalRecord, 'id' | 'date' | 'status'>) => {
     const newRecord: WithdrawalRecord = {
       ...record,
@@ -168,8 +178,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         canWatchMoreAds,
         withdrawalHistory,
         addWithdrawalRecord,
-        spinUsedToday,
-        setSpinUsedToday
+        spinsUsedToday,
+        incrementSpinsUsed,
+        remainingSpins,
+        maxDailySpins
       }}
     >
       {children}
