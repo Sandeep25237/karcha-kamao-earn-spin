@@ -77,8 +77,8 @@ const Home = () => {
           
           {/* Wheel */}
           <div className="relative w-64 h-64 mb-6">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-3 h-6 bg-red-500 z-10"></div>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+              <div className="w-3 h-6 bg-red-500"></div>
             </div>
             
             <div
@@ -93,15 +93,17 @@ const Home = () => {
                 return (
                   <div
                     key={index}
-                    className={`absolute w-full h-full ${color} flex justify-center items-start pt-2`}
+                    className={`absolute w-full h-full ${color} flex justify-center items-start`}
                     style={{
                       clipPath: 'polygon(50% 0%, 50% 50%, 100% 50%, 100% 0%)',
                       transform: `rotate(${rotate}deg)`,
                     }}
                   >
-                    <span className="text-white font-bold transform -rotate-90 text-sm">
-                      {value}
-                    </span>
+                    <div className="absolute top-4 transform -translate-x-1/2 left-1/2">
+                      <span className="text-white font-bold text-lg bg-black bg-opacity-30 px-2 py-1 rounded-full">
+                        {value}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
