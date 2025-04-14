@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { ADMOB_CONFIG, getAdUnitId, shouldUseTestAds } from '@/utils/admobConfig';
+import AdMob from '@/plugins/admob';
 
 interface AdMobAdProps {
   onComplete: () => void;
@@ -33,36 +33,74 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
     console.log(`Initializing AdMob with App ID: ${ADMOB_CONFIG.APP_ID}`);
     console.log(`Loading ad unit: ${adUnitId}`);
     
-    // Add some debugging
-    if (window.hasOwnProperty('cordova') && window.cordova?.plugins?.admob) {
-      console.log("Cordova AdMob plugin is available");
+    const initializeAdMob = async () => {
       try {
-        // Sample code to initialize AdMob - you will need the actual Cordova implementation
-        // window.cordova.plugins.admob.initialize(ADMOB_CONFIG.APP_ID);
-        console.log("AdMob initialized successfully");
-      } catch (error) {
-        console.error("Error initializing AdMob:", error);
-        setAdError("Failed to initialize AdMob plugin");
+        // Check if this is running on a mobile device with Capacitor
+        if ('Capacitor' in window) {
+          console.log("Running in Capacitor environment");
+          try {
+            await AdMob.initialize({ appId: ADMOB_CONFIG.APP_ID });
+            console.log("AdMob initialized successfully in Capacitor");
+            
+            setIsLoading(false);
+            
+            try {
+              const result = await AdMob.showRewardedAd({
+                adUnitId: adUnitId
+              });
+              
+              console.log("Ad result:", result);
+              
+              if (result.rewarded) {
+                onComplete();
+              }
+            } catch (adError) {
+              console.error("Error showing ad:", adError);
+              setAdError("Failed to show ad. Please try again later.");
+            }
+          } catch (initError) {
+            console.error("Error initializing AdMob:", initError);
+            setAdError("Failed to initialize ads. Please check your connection.");
+          }
+        } else if (window.cordova?.plugins?.admob) {
+          console.log("Cordova AdMob plugin is available");
+          // Legacy Cordova implementation
+          try {
+            window.cordova.plugins.admob.initialize(ADMOB_CONFIG.APP_ID);
+            console.log("AdMob initialized successfully in Cordova");
+            
+            // Implement Cordova specific ad display logic
+          } catch (error) {
+            console.error("Error initializing Cordova AdMob:", error);
+            setAdError("Failed to initialize AdMob plugin");
+          }
+        } else {
+          console.log("Native AdMob environment not detected");
+          console.log("Simulating ad display for development");
+          
+          // For non-native environment, simulate ad display
+          const timer = setTimeout(() => {
+            setIsLoading(false);
+            
+            // Simulate successful ad display after delay
+            const simulateAdDisplay = setTimeout(() => {
+              console.log("Simulated ad display completed");
+              onComplete();
+            }, 2000);
+            
+            return () => clearTimeout(simulateAdDisplay);
+          }, 1000);
+          
+          return () => clearTimeout(timer);
+        }
+      } catch (err) {
+        console.error("General error in AdMob initialization:", err);
+        setAdError("Unexpected error in ad system");
+        setIsLoading(false);
       }
-    } else {
-      console.log("Cordova AdMob plugin is NOT available");
-      console.log("Are you running on a real device with Cordova?");
-    }
+    };
     
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      
-      // For now, we'll simulate successful ad display
-      // This should be replaced with actual AdMob implementation
-      const simulateAdDisplay = setTimeout(() => {
-        console.log("Ad display completed");
-        onComplete();
-      }, 2000);
-      
-      return () => clearTimeout(simulateAdDisplay);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
+    initializeAdMob();
   }, [onComplete, adUnitId]);
   
   const handleDismiss = () => {
@@ -114,7 +152,7 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
                 </p>
               </div>
               <p className="text-center mb-4 text-sm text-gray-500">
-                Real AdMob ad would appear here on device
+                {window.hasOwnProperty('Capacitor') || window.cordova ? "Loading real AdMob ad..." : "Real AdMob ad would appear here on device"}
               </p>
             </div>
           )}

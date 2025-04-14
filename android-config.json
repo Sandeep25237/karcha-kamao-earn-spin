@@ -1,0 +1,10 @@
+
+{
+  "androidScheme": "https",
+  "gradlePluginVersion": "8.0.0",
+  "androidxCore": "1.10.0",
+  "androidxAppcompat": "1.6.1",
+  "androidxWebkit": "1.6.1",
+  "androidxActivityVersion": "1.7.0",
+  "androidxFragmentVersion": "1.5.6"
+}
