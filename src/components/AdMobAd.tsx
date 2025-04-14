@@ -1,12 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { Play, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
-
-// AdMob Configuration
-const ADMOB_APP_ID = 'ca-app-pub-9884257131349852~8583116889';
-const ADMOB_UNIT_ID = 'ca-app-pub-9884257131349852/9475727853';
+import { ADMOB_CONFIG, getAdUnitId } from '@/utils/admobConfig';
 
 interface AdMobAdProps {
   onComplete: () => void;
@@ -17,10 +14,13 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [adError, setAdError] = useState<string | null>(null);
   
+  // Get the appropriate ad unit ID based on environment
+  const adUnitId = getAdUnitId();
+  
   // Initialize AdMob
   useEffect(() => {
-    console.log(`Initializing AdMob with App ID: ${ADMOB_APP_ID}`);
-    console.log(`Loading ad unit: ${ADMOB_UNIT_ID}`);
+    console.log(`Initializing AdMob with App ID: ${ADMOB_CONFIG.APP_ID}`);
+    console.log(`Loading ad unit: ${adUnitId}`);
     
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -36,7 +36,7 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, [onComplete, adUnitId]);
   
   const handleDismiss = () => {
     console.log("Ad dismissed by user");
@@ -81,8 +81,10 @@ const AdMobAd = ({ onComplete, onDismiss }: AdMobAdProps) => {
             <div className="flex flex-col items-center">
               <div className="w-full h-40 bg-gray-800 rounded-lg mb-4 flex flex-col items-center justify-center text-white p-4">
                 <p className="text-sm mb-2">AdMob Advertisement</p>
-                <p className="text-xs text-center opacity-75">ID: {ADMOB_UNIT_ID}</p>
-                <p className="mt-4 text-xs text-center">(Simulated for development)</p>
+                <p className="text-xs text-center opacity-75">ID: {adUnitId}</p>
+                <p className="mt-4 text-xs text-center">
+                  {process.env.NODE_ENV === 'development' ? "(Test Ad)" : "(Production Ad)"}
+                </p>
               </div>
               <p className="text-center mb-4 text-sm text-gray-500">
                 In production, your real AdMob ad would appear here

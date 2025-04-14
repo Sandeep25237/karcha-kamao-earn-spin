@@ -8,9 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import AdMobAd from '@/components/AdMobAd';
 import { toast } from '@/components/ui/sonner';
 import { Video } from 'lucide-react';
-
-// AdMob Ad Unit ID (from configuration)
-const AD_UNIT_ID = 'ca-app-pub-9884257131349852/9475727853';
+import { getAdUnitId } from '@/utils/admobConfig';
 
 const WatchAds = () => {
   const { watchedAdsToday, incrementWatchedAds, canWatchMoreAds, coins } = useAppContext();
@@ -18,6 +16,7 @@ const WatchAds = () => {
   
   const maxAdsPerDay = 5;
   const progressPercentage = (watchedAdsToday / maxAdsPerDay) * 100;
+  const adUnitId = getAdUnitId();
   
   const handleWatchAd = () => {
     if (!canWatchMoreAds) {
@@ -25,7 +24,7 @@ const WatchAds = () => {
       return;
     }
     
-    console.log(`Loading AdMob ad unit: ${AD_UNIT_ID}`);
+    console.log(`Loading AdMob ad unit: ${adUnitId}`);
     setShowAd(true);
   };
   

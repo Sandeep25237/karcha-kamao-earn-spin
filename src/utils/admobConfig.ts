@@ -17,7 +17,7 @@ export const ADMOB_CONFIG = {
  * Determines if we should use test ads (typically in development)
  */
 export const shouldUseTestAds = (): boolean => {
-  // Use test ads in development mode
+  // Always use test ads in development mode
   return process.env.NODE_ENV === 'development';
 };
 
@@ -25,5 +25,9 @@ export const shouldUseTestAds = (): boolean => {
  * Get the appropriate ad unit ID based on environment
  */
 export const getAdUnitId = (): string => {
-  return shouldUseTestAds() ? ADMOB_CONFIG.TEST_REWARDED_AD : ADMOB_CONFIG.AD_UNIT_ID;
+  if (shouldUseTestAds()) {
+    console.log("Using test ad units for development");
+    return ADMOB_CONFIG.TEST_REWARDED_AD;
+  }
+  return ADMOB_CONFIG.AD_UNIT_ID;
 };
