@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { useAppContext } from '@/context/AppContext';
@@ -76,7 +75,7 @@ const Home = () => {
           </div>
           
           {/* Wheel */}
-          <div className="relative w-64 h-64 mb-6">
+          <div className="relative w-56 h-56 mb-6">
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
               <div className="w-3 h-6 bg-red-500"></div>
             </div>
@@ -100,7 +99,7 @@ const Home = () => {
                     }}
                   >
                     <div className="absolute top-4 transform -translate-x-1/2 left-1/2">
-                      <span className="text-white font-bold text-lg bg-black bg-opacity-30 px-2 py-1 rounded-full">
+                      <span className="text-white font-bold text-lg bg-app-purple-dark bg-opacity-50 px-2 py-1 rounded-full">
                         {value}
                       </span>
                     </div>
