@@ -12,7 +12,7 @@ const DailyLogin = () => {
   const { currentDay, checkedInDays, checkInToday } = useAppContext();
   const [showAd, setShowAd] = useState(false);
   
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
   
   const handleCheckIn = () => {
     if (checkedInDays.includes(currentDay)) {
